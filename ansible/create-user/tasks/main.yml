@@ -1,0 +1,21 @@
+---
+- name: Check user
+  command: ssh -q -o BatchMode=yes -o ConnectTimeout=3 {{ user_to_create }}@{{ inventory_hostname }} "echo OK"
+  delegate_to: 127.0.0.1
+  failed_when: false
+  register: check_user
+- block:
+  - name: Create user
+    user:
+      name: "{{ user_to_create }}"
+  - name: Add authorized key
+    authorized_key:
+      user: "{{ user_to_create }}"
+      key: "{{ lookup('file', '~/.ssh/id_rsa.pub') }}"
+      exclusive: yes
+  - name: Allow sudo for user
+    copy:
+      content: '{{ user_to_create }} ALL=(ALL:ALL) NOPASSWD: ALL'
+      dest: /etc/sudoers.d/{{ user_to_create }}
+      mode: 0600
+  when: check_user.rc != 0

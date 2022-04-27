@@ -1,0 +1,65 @@
+---
+- hosts: jenkins_controllers
+  remote_user: root
+  pre_tasks:
+    - name: Install packages
+      apt:
+        name:
+          - curl
+          - firewalld
+          - openjdk-11-jdk
+        update_cache: yes
+    - name: Open ports for HTTP and HTTPS
+      firewalld:
+        service: "{{ item }}"
+        permanent: yes
+        immediate: yes
+        state: enabled
+        zone: public
+      loop:
+        - http
+        - https
+        - jenkins
+    - name: Set floating ip
+      template:
+        src: templates/interfaces.j2
+        dest: /etc/network/interfaces
+    - name: Reload services
+      service:
+        name: "{{ item }}"
+        state: restarted
+        enabled: yes
+      loop:
+        - firewalld
+        - networking
+  vars:
+    user_to_create: "{{ jenkins_user }}"
+    jenkins_hostname: "{{ hostname }}"
+    jenkins_package_state: latest
+    jenkins_plugins_state: latest
+    jenkins_java_options: "-Djenkins.install.runSetupWizard=false"
+    certbot_create_if_missing: true
+    certbot_admin_email: "{{ admin_email }}"
+    certbot_certs:
+    - domains:
+        - "{{ hostname }}"
+        - "www.{{ hostname }}"
+    nginx_install_from: os_repository
+    nginx_vhosts:
+    - listen: "443 ssl"
+      server_name: "{{ hostname }}"
+      extra_parameters: |
+        location / {
+          include /etc/nginx/proxy_params;
+          proxy_pass http://localhost:8080;
+          proxy_read_timeout 90s;
+          proxy_redirect http://localhost:8080 https://{{ hostname }};
+        }
+        ssl_certificate /etc/letsencrypt/live/{{ hostname }}/fullchain.pem;
+        ssl_certificate_key /etc/letsencrypt/live/{{ hostname }}/privkey.pem;
+
+  roles:
+    - role: create-user
+    - role: geerlingguy.nginx
+    - role: geerlingguy.certbot
+    - role: geerlingguy.jenkins
