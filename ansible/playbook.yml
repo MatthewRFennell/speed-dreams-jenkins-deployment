@@ -32,12 +32,37 @@
       loop:
         - firewalld
         - networking
+    - name: Configure Jenkins
+      template:
+        src: templates/jenkins.yaml.j2
+        dest: "{{ jenkins_home }}/jenkins.yaml"
+  post_tasks:
+    - name: Disable setup wizard
+      jenkins_script:
+        script: |
+          import static jenkins.model.Jenkins.instance as jenkins
+          import jenkins.install.InstallState
+          if (!jenkins.installState.isSetupComplete()) {
+            InstallState.INITIAL_SETUP_COMPLETED.initializeState()
+          }
+        user: "{{ jenkins_admin_username }}"
+        password: "{{ jenkins_admin_password }}"
   vars:
     user_to_create: "{{ jenkins_user }}"
     jenkins_hostname: "{{ hostname }}"
     jenkins_package_state: latest
     jenkins_plugins_state: latest
     jenkins_java_options: "-Djenkins.install.runSetupWizard=false"
+    jenkins_init_changes:
+      - option: "JAVA_ARGS"
+        value: "{{ jenkins_java_options }}"
+    jenkins_admin_username: "{{ admin_username }}"
+    jenkins_admin_password: "{{ admin_password }}"
+    jenkins_plugins:
+      - git
+      - subversion
+      - configuration-as-code
+    jenkins_plugins_install_dependencies: true
     certbot_create_if_missing: true
     certbot_admin_email: "{{ admin_email }}"
     certbot_certs:
