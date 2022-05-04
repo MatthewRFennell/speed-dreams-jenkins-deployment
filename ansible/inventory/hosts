@@ -1,2 +1,5 @@
 [jenkins_controllers]
 83.136.251.154
+
+[jenkins_agents]
+94.237.54.132

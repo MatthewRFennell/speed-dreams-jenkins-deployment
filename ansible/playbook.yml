@@ -47,6 +47,21 @@
           }
         user: "{{ jenkins_admin_username }}"
         password: "{{ jenkins_admin_password }}"
+    - name: Create .ssh folder for Jenkins user
+      become: yes
+      become_user: jenkins
+      file:
+        path: "{{ jenkins_home }}/.ssh"
+        state: directory
+        mode: '700'
+        owner: jenkins
+    - name: Add agents to known hosts
+      become: yes
+      become_user: jenkins
+      known_hosts:
+        name: "{{ item }}"
+        key: "{{ lookup('pipe', 'ssh-keyscan {{ item }}') }}"
+      with_items: "{{ groups.jenkins_agents }}"
   vars:
     user_to_create: "{{ jenkins_user }}"
     jenkins_hostname: "{{ hostname }}"
@@ -59,6 +74,7 @@
     jenkins_admin_username: "{{ admin_username }}"
     jenkins_admin_password: "{{ admin_password }}"
     jenkins_plugins:
+      - ssh-slaves
       - git
       - subversion
       - configuration-as-code
@@ -82,9 +98,28 @@
         }
         ssl_certificate /etc/letsencrypt/live/{{ hostname }}/fullchain.pem;
         ssl_certificate_key /etc/letsencrypt/live/{{ hostname }}/privkey.pem;
-
   roles:
     - role: create-user
     - role: geerlingguy.nginx
     - role: geerlingguy.certbot
     - role: geerlingguy.jenkins
+
+- hosts: jenkins_agents
+  remote_user: "{{ jenkins_user }}"
+  post_tasks:
+    - name: Generate ssh key for agent
+      local_action:
+        module: openssh_keypair
+        path: "./jenkins_agent"
+    - name: Add public key to jenkins agent authorised keys
+      authorized_key:
+        user: "{{ jenkins_user }}"
+        key: "{{ lookup('file', './jenkins_agent.pub') }}"
+    - name: Install Java
+      become: True
+      apt:
+        name: openjdk-11-jdk
+  vars:
+    user_to_create: "{{ jenkins_user }}"
+  roles:
+    - role: create-user

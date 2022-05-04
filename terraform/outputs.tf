@@ -7,3 +7,8 @@ output "jenkins_controller_floating_ip" {
   description = "The dynamic IP of the Jenkins controller"
   value = upcloud_floating_ip_address.jenkins_controller_ip.ip_address
 }
+
+output "jenkins_agent_floating_ip" {
+  description = "The dynamic IP of the Jenkins agent"
+  value = upcloud_server.jenkins_agent.network_interface[0].ip_address
+}

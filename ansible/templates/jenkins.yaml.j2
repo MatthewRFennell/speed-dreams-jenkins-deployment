@@ -2,3 +2,26 @@
 unclassified:
   location:
     url: https://{{ hostname }}/
+jenkins:
+  numExecutors: 0
+  nodes:
+  - permanent:
+      name: "Jenkins Agent"
+      retentionStrategy: always
+      remoteFS: "/home/{{ jenkins_user }}/jenkins"
+      launcher:
+        ssh:
+          host: {{ jenkins_agent_floating_ip }}
+          credentialsId: "jenkins_agent_ssh_key"
+          sshHostKeyVerificationStrategy: knownHostsFileKeyVerificationStrategy
+credentials:
+  system:
+    domainCredentials:
+      - credentials:
+        - basicSSHUserPrivateKey:
+            id: "jenkins_agent_ssh_key"
+            username: {{ jenkins_user }}
+            privateKeySource:
+              directEntry:
+                privateKey: |
+                  {{ lookup('file', './jenkins_agent') | indent(width=18) }}

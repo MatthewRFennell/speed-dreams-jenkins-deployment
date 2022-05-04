@@ -26,3 +26,28 @@ resource "upcloud_server" "jenkins_controller" {
     user = "root"
   }
 }
+
+resource "upcloud_server" "jenkins_agent" {
+  hostname = "jenkins-agent"
+  zone = "uk-lon1"
+  plan = "1xCPU-1GB"
+  template {
+    size = 25
+    storage = "Debian GNU/Linux 11 (Bullseye)"
+  }
+  network_interface {
+    type = "public"
+  }
+  network_interface {
+    type = "utility"
+  }
+  login {
+    user = "root"
+    keys = [var.ssh_public_key]
+  }
+  connection {
+    host = self.network_interface[0].ip_address
+    type = "ssh"
+    user = "root"
+  }
+}
