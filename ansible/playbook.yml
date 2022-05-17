@@ -8,6 +8,7 @@
           - curl
           - firewalld
           - openjdk-11-jdk
+          - git
         update_cache: yes
     - name: Open ports for HTTP and HTTPS
       firewalld:
@@ -32,6 +33,10 @@
       loop:
         - firewalld
         - networking
+    - name: Ensure Jenkins configuration directory exists
+      file:
+        path: "{{ jenkins_home }}"
+        state: directory
     - name: Configure Jenkins
       template:
         src: templates/jenkins.yaml.j2
@@ -62,6 +67,16 @@
         name: "{{ item }}"
         key: "{{ lookup('pipe', 'ssh-keyscan {{ item }}') }}"
       with_items: "{{ groups.jenkins_agents }}"
+    - name: Configure git username
+      git_config:
+        name: user.name
+        value: "Matthew Fennell"
+        scope: system
+    - name: Configure git email
+      git_config:
+        name: user.email
+        value: "matthew.robert.fennell@gmail.com"
+        scope: system
   vars:
     user_to_create: "{{ jenkins_user }}"
     jenkins_hostname: "{{ hostname }}"
@@ -71,6 +86,8 @@
     jenkins_init_changes:
       - option: "JAVA_ARGS"
         value: "{{ jenkins_java_options }}"
+      - option: "JENKINS_ARGS"
+        value: "--httpKeepAliveTimeout=3600000"
     jenkins_admin_username: "{{ admin_username }}"
     jenkins_admin_password: "{{ admin_password }}"
     jenkins_plugins:
@@ -78,6 +95,10 @@
       - git
       - subversion
       - configuration-as-code
+      - workflow-job
+      - job-dsl
+      - workflow-aggregator
+      - pipeline-stage-view
     jenkins_plugins_install_dependencies: true
     certbot_create_if_missing: true
     certbot_admin_email: "{{ admin_email }}"
@@ -87,25 +108,27 @@
         - "www.{{ hostname }}"
     nginx_install_from: os_repository
     nginx_vhosts:
-    - listen: "443 ssl"
-      server_name: "{{ hostname }}"
-      extra_parameters: |
-        location / {
-          include /etc/nginx/proxy_params;
-          proxy_pass http://localhost:8080;
-          proxy_read_timeout 90s;
-          proxy_redirect http://localhost:8080 https://{{ hostname }};
-        }
-        ssl_certificate /etc/letsencrypt/live/{{ hostname }}/fullchain.pem;
-        ssl_certificate_key /etc/letsencrypt/live/{{ hostname }}/privkey.pem;
+      - listen: "443 ssl"
+        server_name: "{{ hostname }}"
+        extra_parameters: |
+          location / {
+            include /etc/nginx/proxy_params;
+            proxy_pass http://localhost:8080;
+            proxy_read_timeout 90s;
+            proxy_redirect http://localhost:8080 https://{{ hostname }};
+          }
+          ssl_certificate /etc/letsencrypt/live/{{ hostname }}/fullchain.pem;
+          ssl_certificate_key /etc/letsencrypt/live/{{ hostname }}/privkey.pem;
+    swap_file_size_mb: 4096
   roles:
     - role: create-user
     - role: geerlingguy.nginx
     - role: geerlingguy.certbot
     - role: geerlingguy.jenkins
+    - role: geerlingguy.swap
 
 - hosts: jenkins_agents
-  remote_user: "{{ jenkins_user }}"
+  remote_user: root
   post_tasks:
     - name: Generate ssh key for agent
       local_action:
@@ -115,11 +138,60 @@
       authorized_key:
         user: "{{ jenkins_user }}"
         key: "{{ lookup('file', './jenkins_agent.pub') }}"
-    - name: Install Java
+    - name: Install dependencies
       become: True
       apt:
-        name: openjdk-11-jdk
+        name:
+          - git
+          - openjdk-11-jdk
+          - subversion
+          - g++
+          - build-essential
+          - patchelf
+          - fuse
+          - file
+          - cmake
+          - libopenscenegraph-dev
+          - freeglut3-dev
+          - libvorbis-dev
+          - libsdl2-dev
+          - libopenal-dev
+          - libenet-dev
+          - libexpat1-dev
+          - libjpeg-dev
+          - libplib-dev
+          - libpng-dev
+          - libcurl4-openssl-dev
+          - libsdl2-dev
+          - libsdl2-mixer-dev
+          - libgtest-dev
+          - libgmock-dev
+    - name: Configure git username
+      become: True
+      git_config:
+        name: user.name
+        value: "Matthew Fennell"
+        scope: system
+    - name: Configure git email
+      become: True
+      git_config:
+        name: user.email
+        value: "matthew.robert.fennell@gmail.com"
+        scope: system
+    - name: Download appimagetool
+      get_url:
+        url: https://github.com/AppImage/AppImageKit/releases/download/continuous/appimagetool-x86_64.AppImage
+        dest: /usr/local/bin/appimagetool
+        owner: "{{ jenkins_user }}"
+        mode: '500'
+        force: true
   vars:
     user_to_create: "{{ jenkins_user }}"
+    swap_file_size_mb: 4096
+    pip_package: python3-pip
+    pip_install_packages:
+      - name: appimage-builder
   roles:
     - role: create-user
+    - role: geerlingguy.swap
+    - role: geerlingguy.pip

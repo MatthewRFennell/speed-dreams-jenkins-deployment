@@ -2,6 +2,9 @@
 unclassified:
   location:
     url: https://{{ hostname }}/
+  gitSCM:
+    globalConfigName: "Matthew Fennell"
+    globalConfigEmail: "matthew.robert.fennell@gmail.com"
 jenkins:
   numExecutors: 0
   nodes:
@@ -25,3 +28,17 @@ credentials:
               directEntry:
                 privateKey: |
                   {{ lookup('file', './jenkins_agent') | indent(width=18) }}
+jobs:
+  - script: |
+      pipelineJob('speed-dreams') {
+        triggers {
+          scm('H/5 * * * *')
+        }
+        definition {
+          cpsScm {
+            scm {
+              git('https://github.com/MatthewRFennell/speed-dreams-pipeline')
+            }
+          }
+        }
+      }
