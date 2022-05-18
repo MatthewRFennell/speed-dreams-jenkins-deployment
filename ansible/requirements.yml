@@ -1,3 +1,5 @@
 - src: geerlingguy.certbot
-- src: geerlingguy.nginx
 - src: geerlingguy.jenkins
+- src: geerlingguy.nginx
+- src: geerlingguy.pip
+- src: geerlingguy.swap
