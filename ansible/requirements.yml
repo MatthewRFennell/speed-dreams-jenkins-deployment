@@ -4,3 +4,5 @@
 - src: geerlingguy.nginx
 - src: geerlingguy.pip
 - src: geerlingguy.swap
+- name: matthewrfennell.create-user
+  src: https://github.com/MatthewRFennell/ansible-role-create-user

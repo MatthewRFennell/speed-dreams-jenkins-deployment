@@ -119,7 +119,7 @@
           ssl_certificate_key /etc/letsencrypt/live/{{ hostname }}/privkey.pem;
     swap_file_size_mb: 4096
   roles:
-    - role: create-user
+    - role: matthewrfennell.create-user
     - role: geerlingguy.nginx
     - role: geerlingguy.certbot
     - role: geerlingguy.jenkins
@@ -190,6 +190,6 @@
     pip_install_packages:
       - name: appimage-builder
   roles:
-    - role: create-user
+    - role: matthewrfennell.create-user
     - role: geerlingguy.swap
     - role: geerlingguy.pip
