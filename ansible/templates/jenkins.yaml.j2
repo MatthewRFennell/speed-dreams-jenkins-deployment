@@ -36,6 +36,10 @@ jobs:
         triggers {
           scm('H/5 * * * *')
         }
+        logRotator {
+          numToKeep(5)
+          artifactNumToKeep(1)
+        }
         definition {
           cpsScm {
             scm {
