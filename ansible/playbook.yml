@@ -86,8 +86,6 @@
     jenkins_init_changes:
       - option: "JAVA_ARGS"
         value: "{{ jenkins_java_options }}"
-      - option: "JENKINS_ARGS"
-        value: "--httpKeepAliveTimeout=3600000"
     jenkins_admin_username: "{{ admin_username }}"
     jenkins_admin_password: "{{ admin_password }}"
     jenkins_plugins:

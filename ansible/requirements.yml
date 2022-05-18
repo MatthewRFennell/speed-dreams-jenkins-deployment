@@ -1,5 +1,6 @@
 - src: geerlingguy.certbot
-- src: geerlingguy.jenkins
+- name: geerlingguy.jenkins
+  src: https://github.com/MatthewRFennell/ansible-role-jenkins
 - src: geerlingguy.nginx
 - src: geerlingguy.pip
 - src: geerlingguy.swap
