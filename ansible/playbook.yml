@@ -156,7 +156,7 @@
           - libopenal-dev
           - libenet-dev
           - libexpat1-dev
-          - libjpeg-dev
+          - libjpeg62-turbo-dev
           - libplib-dev
           - libpng-dev
           - libcurl4-openssl-dev
