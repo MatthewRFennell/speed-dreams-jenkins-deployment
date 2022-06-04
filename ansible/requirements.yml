@@ -1,6 +1,7 @@
 - src: geerlingguy.certbot
 - name: geerlingguy.jenkins
   src: https://github.com/MatthewRFennell/ansible-role-jenkins
+  version: use-systemd-instead-of-init
 - src: geerlingguy.nginx
 - src: geerlingguy.pip
 - src: geerlingguy.swap
