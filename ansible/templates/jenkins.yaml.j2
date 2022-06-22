@@ -32,7 +32,7 @@ jobs:
   - script: |
       pipelineJob('speed-dreams') {
         displayName('Speed Dreams Experimental AppImage')
-        description('Warning! This job produces experimental AppImages built directly from trunk. It is built for developers and very early testers, not end users. Speed Dreams may crash, refuse to load, or fail in any number of other ways. Additionally, due to the setup of the AppImage, you will not be able to install any extra content other than that included with in the AppImage itself. If you do encounter any bugs and you would like a place report them, please checkout the sourceforge tickets section, or drop by on the Speed Dreams Jenkins chat. Links and alternative packaging formats are available at speed-dreams.net. Thanks!')
+        description('Warning! This job produces experimental AppImages built directly from trunk. It is built for developers and very early testers, not end users. Speed Dreams may crash, refuse to load, or fail in any number of other ways. Additionally, due to the setup of the AppImage, you will not be able to install any extra content other than that included with in the AppImage itself. If you do encounter any bugs and would like to report them, please check the sourceforge tickets section, or drop by on the Speed Dreams XMPP/Matrix chat. Links and alternative packaging formats are available at speed-dreams.net. Many thanks to son_link for the original recipe!')
         triggers {
           scm('H */4 * * *')
         }
