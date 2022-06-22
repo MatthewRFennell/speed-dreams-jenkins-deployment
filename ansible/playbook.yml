@@ -7,7 +7,7 @@
         name:
           - curl
           - firewalld
-          - openjdk-11-jdk
+          - openjdk-17-jdk
           - git
         update_cache: yes
     - name: Open ports for HTTP and HTTPS
@@ -139,7 +139,7 @@
       apt:
         name:
           - git
-          - openjdk-11-jdk
+          - openjdk-17-jdk
           - subversion
           - g++
           - build-essential
@@ -162,6 +162,8 @@
           - libsdl2-mixer-dev
           - libgtest-dev
           - libgmock-dev
+          - squashfs-tools
+          - zsync
     - name: Configure git username
       become: True
       git_config:
