@@ -32,7 +32,7 @@ resource "upcloud_server" "jenkins_agent" {
   zone = "uk-lon1"
   plan = "1xCPU-1GB"
   template {
-    size = 40
+    size = 35
     storage = "Debian GNU/Linux 11 (Bullseye)"
   }
   network_interface {
