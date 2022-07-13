@@ -18,7 +18,7 @@ resource "upcloud_server" "jenkins_controller" {
   }
   login {
     user = "root"
-    keys = [var.ssh_public_key]
+    keys = [file(var.ssh_public_key)]
   }
   connection {
     host = self.network_interface[0].ip_address
@@ -43,7 +43,7 @@ resource "upcloud_server" "jenkins_agent" {
   }
   login {
     user = "root"
-    keys = [var.ssh_public_key]
+    keys = [file(var.ssh_public_key)]
   }
   connection {
     host = self.network_interface[0].ip_address
