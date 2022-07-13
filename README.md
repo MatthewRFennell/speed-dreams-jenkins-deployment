@@ -1,7 +1,7 @@
 # Speed Dreams Jenkins Deployment
 This project deploys a Jenkins controller and agent, with a single
 [pipeline](https://github.com/MatthewRFennell/speed-dreams-pipeline) that builds
-[Speed Dreams](speed-dreams.net/).
+[Speed Dreams](https://speed-dreams.net/).
 
 # Install requirements
 This project uses a combination of [Terraform](https://www.terraform.io/) (to
@@ -80,4 +80,4 @@ You will have to modify these to suit your needs - especially the
 `admin_password`.
 
 # Known instances
-[speed-dreams.fennell.dev](speed-dreams.fennell.dev)
+[speed-dreams.fennell.dev](https://speed-dreams.fennell.dev)
