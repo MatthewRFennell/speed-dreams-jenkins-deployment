@@ -79,5 +79,16 @@ jenkins_user: 'ansible' # the linux user that you would like Jenkins-related pro
 You will have to modify these to suit your needs - especially the
 `admin_password`.
 
+# Usage
+Once this setup is complete, you can run
+```
+./deploy-fresh.sh
+```
+to create the controller and agent on freshly created hosts, or
+```
+./deploy.sh
+```
+to deploy the server to the hosts that are already defined in `inventory/hosts`.
+
 # Known instances
 [speed-dreams.fennell.dev](https://speed-dreams.fennell.dev)
