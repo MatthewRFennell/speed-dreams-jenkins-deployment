@@ -37,6 +37,10 @@
       file:
         path: "{{ jenkins_home }}"
         state: directory
+    - name: Generate ssh key for agent
+      local_action:
+        module: openssh_keypair
+        path: "./jenkins_agent"
     - name: Configure Jenkins
       template:
         src: templates/jenkins.yaml.j2
@@ -126,10 +130,6 @@
 - hosts: jenkins_agents
   remote_user: root
   post_tasks:
-    - name: Generate ssh key for agent
-      local_action:
-        module: openssh_keypair
-        path: "./jenkins_agent"
     - name: Add public key to jenkins agent authorised keys
       authorized_key:
         user: "{{ jenkins_user }}"
