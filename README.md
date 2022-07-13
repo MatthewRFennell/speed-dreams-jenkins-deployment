@@ -60,11 +60,11 @@ With the following format:
 [jenkins_agents]
 <IP address of Jenkins agent>
 ```
-Importantly, as covered in the limitations section, the playbook only currently
-supports a single host for both the controller and the agent. Additionally,
-since the `deploy-fresh.sh` script edits the IP addresses of the
-`inventory/hosts` file directly, line 2 the IP address of the Jenkins controller
-must be on line 2, and the IP address of the agent must be on line 5.
+Importantly, the playbook only currently supports a single host for both the
+controller and the agent. Additionally, since the `deploy-fresh.sh` script edits
+the IP addresses of the `inventory/hosts` file directly, line 2 the IP address
+of the Jenkins controller must be on line 2, and the IP address of the agent
+must be on line 5.
 
 ### ansible/inventory/group\_vars/all.yml file
 You will also need to specify some variables in the above file, as follows:
